@@ -1,10 +1,13 @@
 website_config = [
     {
         "pattern": "youtube.com",
-        "query": "#secondary #playlist #items span.ytd-thumbnail-overlay-time-status-renderer"
+        "query": ["#secondary #playlist #items span.ytd-thumbnail-overlay-time-status-renderer"]
     },
     {   "pattern": "bilibili.com",
-        "query": "#multi_page div.duration"
+        "query": [
+            "#multi_page div.duration",
+            ".video-sections-item div.video-episode-card__info-duration",
+        ]
     }
 ]
 
@@ -12,13 +15,21 @@ function calculateTotalTime(websiteConfig, webIndex) {
     var web_index = arguments[0];
     let totalSeconds = 0;
     let queryStr =  websiteConfig[webIndex]["query"];
-    const timeElements = document.querySelectorAll(queryStr);
+    for (let i = 0; i < queryStr.length; i++) {
+        queryStr[i] = websiteConfig[webIndex]["query"][i];
+        const timeElements = document.querySelectorAll(queryStr);
 
-    timeElements.forEach((timeElement) => {
-      const timeParts = timeElement.textContent.trim().split(':').map(Number);
-      totalSeconds += timeParts.reduce((total, part, index) => total + part * Math.pow(60, timeParts.length - index - 1), 0);
-    });
-    videoCount = timeElements.length;
+        timeElements.forEach((timeElement) => {
+          const timeParts = timeElement.textContent.trim().split(':').map(Number);
+          totalSeconds += timeParts.reduce((total, part, index) => total + part * Math.pow(60, timeParts.length - index - 1), 0);
+        });
+
+        videoCount = timeElements.length;
+        if (totalSeconds > 0) {
+            break;
+        }
+    }
+
     return {totalSeconds, videoCount};
 }
 
