@@ -1,5 +1,6 @@
-#totalTime {
+div {
     white-space: nowrap;
     font-weight: bold;
+    text-align: center;
     color: blue;
 }

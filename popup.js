@@ -1,9 +1,11 @@
-website_config = [
-    {
+website_config = [{
         "pattern": "youtube.com",
-        "query": ["#secondary #playlist #items span.ytd-thumbnail-overlay-time-status-renderer"]
+        "query": [
+            "#secondary #playlist #items span.ytd-thumbnail-overlay-time-status-renderer"
+        ]
     },
-    {   "pattern": "bilibili.com",
+    {
+        "pattern": "bilibili.com",
         "query": [
             "#multi_page div.duration",
             ".video-sections-item div.video-episode-card__info-duration",
@@ -12,16 +14,14 @@ website_config = [
 ]
 
 function calculateTotalTime(websiteConfig, webIndex) {
-    var web_index = arguments[0];
     let totalSeconds = 0;
-    let queryStr =  websiteConfig[webIndex]["query"];
+    let queryStr = websiteConfig[webIndex]["query"];
     for (let i = 0; i < queryStr.length; i++) {
-        queryStr[i] = websiteConfig[webIndex]["query"][i];
-        const timeElements = document.querySelectorAll(queryStr);
+        const timeElements = document.querySelectorAll(queryStr[i]);
 
         timeElements.forEach((timeElement) => {
-          const timeParts = timeElement.textContent.trim().split(':').map(Number);
-          totalSeconds += timeParts.reduce((total, part, index) => total + part * Math.pow(60, timeParts.length - index - 1), 0);
+            const timeParts = timeElement.textContent.trim().split(':').map(Number);
+            totalSeconds += timeParts.reduce((total, part, index) => total + part * Math.pow(60, timeParts.length - index - 1), 0);
         });
 
         videoCount = timeElements.length;
@@ -30,10 +30,10 @@ function calculateTotalTime(websiteConfig, webIndex) {
         }
     }
 
-    return {totalSeconds, videoCount};
+    return { totalSeconds, videoCount };
 }
 
-chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
     var activeTab = tabs[0];
     var webIndex = website_config.findIndex(config => activeTab.url.includes(config.pattern));
     if (webIndex !== -1) {
