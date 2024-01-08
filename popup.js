@@ -33,6 +33,18 @@ function calculateTotalTime(websiteConfig, webIndex) {
     return { totalSeconds, videoCount };
 }
 
+function formatSeconds(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    const paddedHours = String(hours).padStart(2, '0');
+    const paddedMinutes = String(minutes).padStart(2, '0');
+    const paddedSeconds = String(remainingSeconds).padStart(2, '0');
+
+    return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
+}
+
 chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
     var activeTab = tabs[0];
     var webIndex = website_config.findIndex(config => activeTab.url.includes(config.pattern));
@@ -47,7 +59,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
                 return;
             }
             const { totalSeconds, videoCount } = results[0].result;
-            const totalTime = new Date(totalSeconds * 1000).toISOString().substr(11, 8);
+            const totalTime = formatSeconds(totalSeconds);
             document.getElementById('totalTime').textContent = `Duration: ${totalTime}, Video: ${videoCount}`
         });
     } else {
